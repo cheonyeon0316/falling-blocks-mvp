@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Falling Blocks MVP</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="game-header">
+      <div>
+        <p class="eyebrow">MVP PROTOTYPE</p>
+        <h1>Falling Blocks</h1>
+      </div>
+      <button id="restart-button" class="button button--secondary" type="button">새 게임 (R)</button>
+    </header>
+
+    <section class="game-layout" aria-label="블록 낙하 퍼즐">
+      <aside class="side-panel side-panel--left">
+        <section class="panel-card">
+          <h2>HOLD</h2>
+          <div id="hold-preview" class="preview-stack" aria-label="Hold 블록"></div>
+          <p class="panel-hint">C / Shift</p>
+        </section>
+        <section class="panel-card controls">
+          <h2>조작</h2>
+          <dl>
+            <div><dt>이동</dt><dd>← → / A D</dd></div>
+            <div><dt>소프트 드롭</dt><dd>↓ / S</dd></div>
+            <div><dt>하드 드롭</dt><dd>Space</dd></div>
+            <div><dt>회전</dt><dd>↑ X / Z</dd></div>
+            <div><dt>일시정지</dt><dd>P / Esc</dd></div>
+          </dl>
+        </section>
+        <section class="panel-card">
+          <label class="volume-control" for="volume">
+            <span>효과음</span><output id="volume-value" for="volume">35%</output>
+          </label>
+          <input id="volume" class="volume-slider" type="range" min="0" max="100" value="35" aria-label="효과음 음량">
+        </section>
+      </aside>
+
+      <section class="board-wrap">
+        <div class="hud" aria-label="게임 상태">
+          <div><span>Score</span><strong id="score">0000000</strong></div>
+          <div><span>Level</span><strong id="level">01</strong></div>
+          <div><span>Lines</span><strong id="lines">000</strong></div>
+          <div><span>Combo</span><strong id="combo">-</strong></div>
+          <div><span>Best</span><strong id="high-score">0000000</strong></div>
+        </div>
+        <div id="board" class="board" role="grid" tabindex="0" aria-label="10열 20행 게임 보드. 게임 조작을 위해 클릭하세요."></div>
+        <div id="overlay" class="overlay" hidden>
+          <h2 id="overlay-title"></h2>
+          <p id="overlay-detail"></p>
+        </div>
+      </section>
+
+      <aside class="side-panel side-panel--right">
+        <section class="panel-card">
+          <h2>NEXT</h2>
+          <div id="next-preview" class="preview-stack" aria-label="다음 블록 5개"></div>
+        </section>
+        <section class="panel-card panel-note">
+          <p>고스트는 현재 블록이 도달할 마지막 위치를 보여 줍니다.</p>
+          <p>줄을 지우며 공간을 회복하고, 다음 5개와 Hold로 위험을 관리하세요.</p>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="game-footer">
+      <span>브라우저에서 실행되는 규칙 검증용 MVP</span>
+      <span>창을 벗어나면 일시정지 · P 또는 Esc로 계속</span>
+    </footer>
+  </main>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
