@@ -407,8 +407,12 @@ h2 {
 .board--hard-drop::after {
   position: absolute;
   z-index: 4;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  aspect-ratio: 1;
   border-radius: inherit;
+  transform: translate(-50%, -50%);
   background-image: url("./assets/generated/normalized/vfx-atlas.png");
   background-position: 100% 33.3333%;
   background-size: 400% 400%;
