@@ -95,6 +95,7 @@ const snapshotExpression = `(() => {
   const board = document.querySelector('.board-wrap').getBoundingClientRect();
   const right = document.querySelector('.side-panel--right').getBoundingClientRect();
   return {
+    titleVisible: getComputedStyle(document.querySelector('#title-screen')).display !== 'none',
     next: [...document.querySelectorAll('#next-preview .preview')].map(previewType),
     hold: previewType(document.querySelector('#hold-preview .preview')),
     active: [...document.querySelectorAll('#board .cell--active')].map((cell) => [...cell.parentNode.children].indexOf(cell)),
@@ -123,28 +124,36 @@ async function inspectBrowser(name, executable, url) {
     await send("Runtime.enable");
     await send("Emulation.setDeviceMetricsOverride", { width: 1600, height: 900, deviceScaleFactor: 1, mobile: false });
     await waitFor(() => evaluate("document.querySelectorAll('#board .cell').length === 200"));
-    await evaluate("document.querySelector('#board').focus()");
-
-    const initial = await evaluate(snapshotExpression);
-    assert.equal(initial.next.length, 5);
-    assert.ok(initial.next.every((preview) => preview.cells === 16 && preview.colored === 4 && preview.types.length === 1));
-    assert.equal(initial.hold.colored, 0);
-    assert.equal(initial.overlay, "none");
-    assert.equal(initial.noOverlap, true);
-    assert.equal(initial.noHorizontalOverflow, true);
-
-    if (name === "Chrome") {
-      const { data } = await send("Page.captureScreenshot", { format: "png" });
-      const screenshot = join(tmpdir(), "falling-block-1600x900.png");
-      await writeFile(screenshot, Buffer.from(data, "base64"));
-      console.log(`Visual QA screenshot: ${screenshot}`);
-    }
 
     const key = async (keyName, code, virtualKeyCode) => {
       const params = { key: keyName, code, windowsVirtualKeyCode: virtualKeyCode };
       await send("Input.dispatchKeyEvent", { type: "keyDown", ...params });
       await send("Input.dispatchKeyEvent", { type: "keyUp", ...params });
     };
+
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('#title-screen')).display !== 'none'"), true);
+    assert.deepEqual(await evaluate("Promise.all(['title/falling-blocks-title-bg.png', 'normalized/player-atlas.png', 'normalized/enemy-atlas.png', 'normalized/vfx-atlas.png'].map(path => fetch('./assets/generated/' + path).then(response => response.ok)))"), [true, true, true, true]);
+    assert.equal(await evaluate("document.querySelector('#title-start-button').textContent.includes('게임 시작')"), true);
+    assert.ok(await evaluate("document.querySelector('#title-start-button').getBoundingClientRect().width > 0"));
+
+    if (name === "Chrome") {
+      await evaluate("document.fonts.ready.then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))");
+      const { data } = await send("Page.captureScreenshot", { format: "png" });
+      const screenshot = join(tmpdir(), "falling-block-1600x900.png");
+      await writeFile(screenshot, Buffer.from(data, "base64"));
+      console.log(`Visual QA screenshot: ${screenshot}`);
+    }
+
+    await key("Enter", "Enter", 13);
+    const initial = await evaluate(snapshotExpression);
+    assert.equal(initial.titleVisible, false);
+    assert.equal(initial.next.length, 5);
+    assert.ok(initial.next.every((preview) => preview.cells === 16 && preview.colored === 4 && preview.types.length === 1));
+    assert.equal(initial.hold.colored, 0);
+    assert.equal(initial.overlay, "none");
+    assert.equal(initial.noOverlap, true);
+    assert.equal(initial.noHorizontalOverflow, true);
+    await evaluate("document.querySelector('#board').focus()");
 
     await key("c", "KeyC", 67);
     const held = await evaluate(snapshotExpression);
@@ -169,6 +178,25 @@ async function inspectBrowser(name, executable, url) {
     await evaluate("document.querySelector('#volume').value = '0'; document.querySelector('#volume').dispatchEvent(new Event('input'))");
     assert.equal(await evaluate("document.querySelector('#volume-value').textContent"), "0%");
     assert.deepEqual(errors, []);
+
+    await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await send("Page.navigate", { url });
+    await waitFor(() => evaluate("getComputedStyle(document.querySelector('#title-screen')).display !== 'none' && document.querySelectorAll('#board .cell').length === 200"));
+    const mobileTitle = await evaluate(`(() => {
+      const start = document.querySelector('#title-start-button').getBoundingClientRect();
+      return {
+        noOverflow: document.documentElement.scrollWidth <= window.innerWidth,
+        startVisible: start.top >= 0 && start.bottom <= window.innerHeight,
+        startLabel: document.querySelector('#title-start-button').textContent.includes('게임 시작'),
+      };
+    })()`);
+    assert.deepEqual(mobileTitle, { noOverflow: true, startVisible: true, startLabel: true });
+    if (name === "Chrome") {
+      const { data } = await send("Page.captureScreenshot", { format: "png" });
+      const screenshot = join(tmpdir(), "falling-block-mobile-390x844.png");
+      await writeFile(screenshot, Buffer.from(data, "base64"));
+      console.log(`Mobile visual QA screenshot: ${screenshot}`);
+    }
     console.log(`${name}: browser smoke passed`);
   } finally {
     if (connection) {

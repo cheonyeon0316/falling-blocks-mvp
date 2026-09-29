@@ -6,8 +6,27 @@
   <title>Falling Blocks MVP</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-  <main class="game-shell">
+<body class="title-screen-active">
+  <section id="title-screen" class="title-screen" role="dialog" aria-modal="true" aria-labelledby="title-screen-heading">
+    <div class="title-screen__content">
+      <p class="title-screen__eyebrow">CRYSTAL GRID PUZZLE</p>
+      <h1 id="title-screen-heading">FALLING<br><span>BLOCKS</span></h1>
+      <p class="title-screen__tagline">블록을 쌓고, 줄을 지우고,<br>위기를 돌파하세요.</p>
+      <button id="title-start-button" class="title-screen__start" type="button">
+        <span>게임 시작</span><span class="title-screen__start-icon" aria-hidden="true">↗</span>
+      </button>
+      <p class="title-screen__prompt"><kbd>ENTER</kbd> 또는 <kbd>SPACE</kbd>를 눌러 시작</p>
+      <div class="title-screen__controls" aria-label="주요 조작">
+        <span><kbd>←</kbd><kbd>→</kbd> 이동</span>
+        <span><kbd>↑</kbd> 회전</span>
+        <span><kbd>SPACE</kbd> 드롭</span>
+        <span><kbd>C</kbd> 홀드</span>
+      </div>
+    </div>
+    <p class="title-screen__footnote" aria-hidden="true">ARRANGE · CLEAR · SURVIVE</p>
+  </section>
+
+  <main class="game-shell" aria-hidden="true" inert>
     <header class="game-header">
       <div>
         <p class="eyebrow">MVP PROTOTYPE</p>
@@ -51,6 +70,10 @@
         </div>
         <div id="board" class="board" role="grid" tabindex="0" aria-label="10열 20행 게임 보드. 게임 조작을 위해 클릭하세요."></div>
         <div id="overlay" class="overlay" hidden>
+          <div class="overlay__art" aria-hidden="true">
+            <span class="overlay__sprite overlay__sprite--guide"></span>
+            <span class="overlay__sprite overlay__sprite--void"></span>
+          </div>
           <h2 id="overlay-title"></h2>
           <p id="overlay-detail"></p>
         </div>

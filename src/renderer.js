@@ -37,7 +37,12 @@ export class Renderer {
     for (let index = 0; index < 5; index += 1) this.createPreview(this.nextElement);
     this.unsubscribe = model.on("stateChanged", (state) => this.render(state));
     this.unsubscribeHardDrop = model.on("hardDropped", () => this.flashHardDrop());
+    this.unsubscribeInput = [
+      model.on("pieceMoved", ({ dx }) => { if (dx !== 0) this.flashInputFeedback(); }),
+      model.on("pieceRotated", () => this.flashInputFeedback()),
+    ];
     this.hardDropTimer = null;
+    this.inputFeedbackTimer = null;
     this.render(model.getState());
   }
 
@@ -67,7 +72,9 @@ export class Renderer {
   destroy() {
     this.unsubscribe?.();
     this.unsubscribeHardDrop?.();
+    this.unsubscribeInput?.forEach((unsubscribe) => unsubscribe());
     if (this.hardDropTimer !== null) clearTimeout(this.hardDropTimer);
+    if (this.inputFeedbackTimer !== null) clearTimeout(this.inputFeedbackTimer);
   }
 
   flashHardDrop() {
@@ -77,6 +84,37 @@ export class Renderer {
       this.boardElement.classList.remove("board--hard-drop");
       this.hardDropTimer = null;
     }, 80);
+  }
+
+  flashInputFeedback() {
+    if (this.inputFeedbackTimer !== null) clearTimeout(this.inputFeedbackTimer);
+    this.boardElement.classList.remove("board--input-feedback");
+    void this.boardElement.offsetWidth;
+    this.boardElement.classList.add("board--input-feedback");
+    this.inputFeedbackTimer = setTimeout(() => {
+      this.boardElement.classList.remove("board--input-feedback");
+      this.inputFeedbackTimer = null;
+    }, 85);
+  }
+
+  renderLineClearVfx(state) {
+    this.boardElement.querySelectorAll(".line-clear-effect").forEach((effect) => effect.remove());
+    if (state.phase !== "LINE_CLEAR") return;
+
+    const boardBounds = this.boardElement.getBoundingClientRect?.();
+    for (const boardY of state.lineClearRows) {
+      const visibleY = boardY - 2;
+      if (visibleY < 0 || visibleY >= 20) continue;
+      const effect = this.document.createElement("div");
+      effect.className = "line-clear-effect";
+      effect.setAttribute("aria-hidden", "true");
+      const rowCell = this.boardCells[visibleY * BOARD_WIDTH];
+      const rowBounds = rowCell?.getBoundingClientRect?.();
+      effect.style.top = boardBounds && rowBounds
+        ? `${rowBounds.top - boardBounds.top}px`
+        : `${6 + visibleY * 34}px`;
+      this.boardElement.append(effect);
+    }
   }
 
   setHighScore(score) {
@@ -101,6 +139,7 @@ export class Renderer {
 
     if (ghost) this.paintPiece(ghost, "cell--ghost", true);
     if (state.active) this.paintPiece(state.active, "cell--active", false);
+    this.renderLineClearVfx(state);
 
     this.scoreElement.textContent = String(state.score).padStart(7, "0");
     this.levelElement.textContent = String(state.level).padStart(2, "0");
@@ -149,6 +188,7 @@ export class Renderer {
   }
 
   renderOverlay(state) {
+    this.overlayElement.classList.toggle("overlay--game-over", state.phase === "GAME_OVER");
     if (state.phase === "GAME_OVER") {
       this.overlayElement.hidden = false;
       this.overlayTitle.textContent = "GAME OVER";

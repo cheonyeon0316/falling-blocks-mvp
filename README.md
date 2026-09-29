@@ -13,6 +13,8 @@ node scripts/serve.mjs
 
 브라우저에서 http://127.0.0.1:4173 을 엽니다.
 
+타이틀 화면에서 **게임 시작**을 누르거나 Enter/Space를 눌러 플레이를 시작합니다. 타이틀 배경은 `assets/generated/title/falling-blocks-title-bg.png`이며, 메뉴와 조작 안내는 반응형 HTML UI로 표시됩니다. 생성 스프라이트는 `assets/generated/normalized/`에 공통 320×320 프레임으로 정규화해 VFX와 게임오버 연출에 연결했습니다.
+
 ## 공개 데모
 
 [GitHub Pages에서 Falling Blocks 플레이하기](https://cheonyeon0316.github.io/falling-blocks-mvp/)

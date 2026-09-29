@@ -7,6 +7,7 @@ import { Renderer } from "../src/renderer.js";
 class FakeElement {
   constructor() {
     this.children = [];
+    this.style = {};
     this.className = "";
     this.dataset = {};
     this.textContent = "";
@@ -29,7 +30,14 @@ class FakeElement {
   setAttribute() {}
 
   append(child) {
+    child.parentElement = this;
     this.children.push(child);
+  }
+
+  remove() {
+    if (this.parentElement) {
+      this.parentElement.children = this.parentElement.children.filter((child) => child !== this);
+    }
   }
 
   replaceChildren(...children) {
@@ -116,6 +124,21 @@ test("gravity updates the visible active cells and game over shows the final res
 
   model.setGameOver("test");
   assert.equal(documentRef.querySelector("#overlay").hidden, false);
+  assert.equal(documentRef.querySelector("#overlay").classList.contains("overlay--game-over"), true);
   assert.match(documentRef.querySelector("#overlay-detail").textContent, /점수 0 · 0줄 삭제/);
+  renderer.destroy();
+});
+
+test("line clears render one VFX sprite per visible row", () => {
+  const model = new GameModel({ seed: 303 });
+  const documentRef = new FakeDocument();
+  const renderer = new Renderer(model, documentRef);
+  model.phase = "LINE_CLEAR";
+  model.lineClearRows = [4, 5];
+  renderer.render(model.getState());
+  const effects = documentRef.querySelector("#board").querySelectorAll(".line-clear-effect");
+  assert.equal(effects.length, 2);
+  assert.equal(effects[0].style.top, "74px");
+  assert.equal(effects[1].style.top, "108px");
   renderer.destroy();
 });

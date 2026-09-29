@@ -27,6 +27,159 @@ button {
   font: inherit;
 }
 
+body.title-screen-active {
+  overflow: hidden;
+}
+
+.title-screen {
+  --title-cyan: #67e8f9;
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  overflow: auto;
+  padding: clamp(24px, 5vw, 72px);
+  color: #f8fafc;
+  background-color: #050916;
+  background-image:
+    linear-gradient(90deg, rgba(4, 8, 22, 0.96) 0%, rgba(4, 8, 22, 0.84) 29%, rgba(4, 8, 22, 0.38) 48%, rgba(4, 8, 22, 0.02) 72%),
+    url("./assets/generated/title/falling-blocks-title-bg.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.title-screen[hidden] {
+  display: none;
+}
+
+.title-screen__content {
+  width: min(500px, 45vw);
+  margin-left: clamp(0px, 3vw, 48px);
+  padding: 24px 0;
+}
+
+.title-screen__eyebrow {
+  margin: 0 0 18px 5px;
+  color: #fcd76a;
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
+  font-weight: 800;
+  letter-spacing: 0.3em;
+}
+
+.title-screen__content h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(4.2rem, 8.6vw, 8.3rem);
+  font-weight: 950;
+  letter-spacing: -0.09em;
+  line-height: 0.78;
+  text-shadow: 0 8px 36px rgba(4, 8, 22, 0.52);
+}
+
+.title-screen__content h1 span {
+  display: inline-block;
+  margin-top: 0.12em;
+  color: var(--title-cyan);
+  background: linear-gradient(100deg, #f8fafc 0%, #8beaff 36%, #49a7ff 86%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.title-screen__tagline {
+  margin: 25px 0 27px 5px;
+  color: rgba(226, 240, 255, 0.84);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.7;
+}
+
+.title-screen__start {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 300px);
+  min-height: 60px;
+  padding: 0 22px 0 25px;
+  border: 1px solid rgba(186, 240, 255, 0.8);
+  border-radius: 10px;
+  color: #061323;
+  background: linear-gradient(105deg, #b6f4ff, #67d7fa 52%, #72aaff);
+  box-shadow: 0 10px 34px rgba(43, 175, 255, 0.25), inset 0 1px rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-weight: 850;
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.title-screen__start:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 15px 42px rgba(43, 175, 255, 0.38), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.title-screen__start:focus-visible {
+  outline: 2px solid rgba(224, 247, 255, 0.94);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(103, 216, 250, 0.2), 0 12px 38px rgba(43, 175, 255, 0.35);
+}
+
+.title-screen__start-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.title-screen__start > span {
+  color: #061323;
+}
+
+.title-screen__prompt {
+  margin: 13px 0 26px 5px;
+  color: rgba(203, 220, 239, 0.67);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.title-screen kbd {
+  display: inline-grid;
+  min-width: 24px;
+  min-height: 22px;
+  place-items: center;
+  padding: 1px 5px;
+  border: 1px solid rgba(176, 213, 241, 0.22);
+  border-radius: 5px;
+  color: rgba(232, 243, 255, 0.86);
+  background: rgba(8, 20, 39, 0.72);
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  vertical-align: 1px;
+}
+
+.title-screen__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 15px;
+  color: rgba(203, 220, 239, 0.66);
+  font-size: 0.7rem;
+}
+
+.title-screen__controls span {
+  white-space: nowrap;
+}
+
+.title-screen__footnote {
+  position: absolute;
+  right: clamp(18px, 3vw, 44px);
+  bottom: 22px;
+  margin: 0;
+  color: rgba(218, 237, 255, 0.48);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
 .game-shell {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
@@ -233,6 +386,7 @@ h2 {
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(10, var(--board-cell));
   grid-template-rows: repeat(20, var(--board-cell));
@@ -248,6 +402,44 @@ h2 {
 
 .board--hard-drop {
   filter: brightness(1.3);
+}
+
+.board--hard-drop::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("./assets/generated/normalized/vfx-atlas.png");
+  background-position: 100% 33.3333%;
+  background-size: 400% 400%;
+  content: "";
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  animation: hard-drop-spark 80ms ease-out both;
+}
+
+.board--input-feedback .cell--active::after {
+  background-image: url("./assets/generated/normalized/vfx-atlas.png");
+  background-position: 0 0;
+  background-size: 400% 400%;
+  mix-blend-mode: screen;
+  animation: input-spark 85ms ease-out both;
+}
+
+.line-clear-effect {
+  position: absolute;
+  z-index: 5;
+  inset-inline: 6px;
+  height: var(--board-cell);
+  border-radius: 4px;
+  background-image: url("./assets/generated/normalized/vfx-atlas.png");
+  background-position: 0% 66.6667%;
+  background-size: 400% 400%;
+  filter: drop-shadow(0 0 7px rgba(103, 232, 249, 0.7));
+  opacity: 0.95;
+  pointer-events: none;
+  animation: line-clear-sweep 150ms steps(4, end) both;
 }
 
 .cell,
@@ -331,6 +523,60 @@ h2 {
   color: var(--muted);
 }
 
+.overlay__art {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.overlay--game-over .overlay__art {
+  display: flex;
+}
+
+.overlay__sprite {
+  display: block;
+  width: 88px;
+  height: 88px;
+  background-repeat: no-repeat;
+  background-size: 400% 400%;
+  filter: drop-shadow(0 0 13px rgba(83, 197, 255, 0.3));
+}
+
+.overlay__sprite--guide {
+  background-image: url("./assets/generated/normalized/player-atlas.png");
+  background-position: 100% 100%;
+}
+
+.overlay__sprite--void {
+  background-image: url("./assets/generated/normalized/enemy-atlas.png");
+  background-position: 0 0;
+  filter: drop-shadow(0 0 13px rgba(255, 58, 88, 0.46));
+  animation: sprite-idle 900ms steps(4, end) infinite;
+}
+
+@keyframes hard-drop-spark {
+  0% { opacity: 0; }
+  20% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+@keyframes input-spark {
+  0% { opacity: 0.9; transform: scale(0.68); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+@keyframes line-clear-sweep {
+  0% { background-position: 0% 66.6667%; opacity: 0.6; }
+  100% { background-position: 100% 66.6667%; opacity: 1; }
+}
+
+@keyframes sprite-idle {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}
+
 .game-footer {
   justify-content: space-between;
   gap: 12px;
@@ -370,6 +616,49 @@ h2 {
   }
 }
 
+@media (max-width: 680px) {
+  .title-screen {
+    align-items: end;
+    padding: 24px 22px max(34px, env(safe-area-inset-bottom));
+    background-image:
+      linear-gradient(180deg, rgba(4, 8, 22, 0.08) 7%, rgba(4, 8, 22, 0.24) 35%, rgba(4, 8, 22, 0.92) 68%, #040816 100%),
+      linear-gradient(90deg, rgba(4, 8, 22, 0.42), transparent 86%),
+      url("./assets/generated/title/falling-blocks-title-bg.png");
+    background-position: 68% center;
+  }
+
+  .title-screen__content {
+    width: min(100%, 470px);
+    margin: 0;
+    padding: 0;
+  }
+
+  .title-screen__eyebrow {
+    margin-bottom: 14px;
+  }
+
+  .title-screen__content h1 {
+    font-size: clamp(3.7rem, 14vw, 5.8rem);
+  }
+
+  .title-screen__tagline {
+    margin: 19px 0 19px 5px;
+    font-size: 0.96rem;
+  }
+
+  .title-screen__start {
+    min-height: 56px;
+  }
+
+  .title-screen__prompt {
+    margin-bottom: 19px;
+  }
+
+  .title-screen__footnote {
+    display: none;
+  }
+}
+
 @media (max-width: 540px) {
   .game-shell {
     width: min(100% - 16px, 420px);
@@ -406,4 +695,13 @@ h2 {
     display: block;
     line-height: 1.7;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-screen__start { transition: none; }
+  .overlay__sprite--void { animation: none; }
+  .cell--clearing,
+  .line-clear-effect,
+  .board--input-feedback .cell--active::after,
+  .board--hard-drop::after { animation: none; }
 }
